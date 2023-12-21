@@ -8,16 +8,24 @@ import { Role } from './user/entities/role.entity';
 import { Permission } from './user/entities/permission.entity';
 import { RedisModule } from './redis/redis.module';
 import { EmailModule } from './email/email.module';
+import {
+  mysql_server_host,
+  mysql_server_port,
+  mysql_server_username,
+  mysql_server_password,
+  mysql_server_database,
+} from 'config';
+// import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'localhost',
-      port: 3307,
-      username: 'root',
-      password: 'guang',
-      database: 'meeting_room_booking_system',
+      host: mysql_server_host,
+      port: mysql_server_port,
+      username: mysql_server_username,
+      password: mysql_server_password,
+      database: mysql_server_database,
       synchronize: true,
       logging: true,
       entities: [User, Role, Permission],
@@ -28,6 +36,10 @@ import { EmailModule } from './email/email.module';
       },
     }),
     UserModule,
+    // ConfigModule.forRoot({
+    //   isGlobal: true,
+    //   envFilePath: 'src/.env',
+    // }),
     RedisModule,
     EmailModule,
   ],

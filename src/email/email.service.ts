@@ -1,4 +1,10 @@
 import { Injectable } from '@nestjs/common';
+import {
+  nodemailer_host,
+  nodemailer_port,
+  nodemailer_auth_user,
+  nodemailer_auth_pass,
+} from 'config';
 import { createTransport, Transporter } from 'nodemailer';
 
 @Injectable()
@@ -7,12 +13,12 @@ export class EmailService {
 
   constructor() {
     this.transporter = createTransport({
-      host: 'smtp.qq.com',
-      port: 587,
+      host: nodemailer_host,
+      port: nodemailer_port,
       secure: false,
       auth: {
-        user: '841791885@qq.com',
-        pass: 'fhxspegdgxnsbeei',
+        user: nodemailer_auth_user,
+        pass: nodemailer_auth_pass,
       },
     });
   }
@@ -21,7 +27,7 @@ export class EmailService {
     await this.transporter.sendMail({
       from: {
         name: '会议室预定系统',
-        address: '841791885@qq.com',
+        address: nodemailer_auth_user,
       },
       to,
       subject,
