@@ -14,7 +14,12 @@ import {
   mysql_server_username,
   mysql_server_password,
   mysql_server_database,
+  jwt_secret,
 } from 'config';
+import { JwtModule } from '@nestjs/jwt';
+import { PermissionGuard } from './permission.guard';
+import { LoginGuard } from './login.guard';
+import { APP_GUARD } from '@nestjs/core';
 // import { ConfigModule } from '@nestjs/config';
 
 @Module({
@@ -27,7 +32,7 @@ import {
       password: mysql_server_password,
       database: mysql_server_database,
       synchronize: true,
-      logging: true,
+      logging: false,
       entities: [User, Role, Permission],
       poolSize: 10,
       connectorPackage: 'mysql2',
@@ -35,6 +40,18 @@ import {
         authPlugin: 'sha256_password',
       },
     }),
+    JwtModule.registerAsync({
+      global: true,
+      useFactory() {
+        return {
+          secret: jwt_secret,
+          signOptions: {
+            expiresIn: '30m', // 默认 30 分钟
+          },
+        };
+      },
+    }),
+
     UserModule,
     // ConfigModule.forRoot({
     //   isGlobal: true,
@@ -44,6 +61,16 @@ import {
     EmailModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: LoginGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: PermissionGuard,
+    },
+  ],
 })
 export class AppModule {}
